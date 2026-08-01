@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>เสนอคำใหม่ | พจนานุกรมภาษาถิ่นไทย</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ชุดสี/ตัวแปรพื้นฐาน คัดลอกมาจาก index.html เพื่อให้หน้าตาตรงกันทุกหน้า */
+:root{
+  --bg:#faf8f5;
+  --surface:#ffffff;
+  --border:#e8e2d9;
+  --text:#2b2622;
+  --text-soft:#6f665e;
+  --accent:#b3541e;
+  --accent-soft:#fdf2e9;
+  --highlight:#ffe9a8;
+  --danger:#c0392b;
+  --danger-soft:#fbeae8;
+  --success:#2e7d32;
+  --success-soft:#e9f5ea;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.04);
+  --nav-h:60px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  font-family:"Noto Sans Thai", system-ui, -apple-system, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.65;
+  font-size:16px;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+}
+
+.wrap{
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+  padding:0 12px;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--bg);
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.brand h1{
+  font-size:1.2rem;
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-.01em;
+}
+.brand span{
+  display:block;
+  font-size:.75rem;
+  color:var(--text-soft);
+  margin-top:2px;
+}
+
+/* --- ฟอร์ม --- */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+  margin:14px 0;
+}
+
+.field{ margin-bottom:16px; }
+.field:last-of-type{ margin-bottom:0; }
+.field label{
+  display:block;
+  font-size:.85rem;
+  font-weight:600;
+  margin-bottom:6px;
+}
+.field .req{ color:var(--danger); }
+.field .hint{
+  display:block;
+  font-weight:400;
+  font-size:.75rem;
+  color:var(--text-soft);
+  margin-top:2px;
+}
+
+.field input[type="text"],
+.field select,
+.field textarea{
+  width:100%;
+  min-height:44px; /* พื้นที่กดอย่างน้อย 44px ตามมาตรฐาน iOS */
+  padding:11px 12px;
+  font-family:inherit;
+  font-size:1rem;
+  color:var(--text);
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field textarea{ resize:vertical; min-height:64px; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+
+/* เมื่อช่องไหนกรอกผิด ให้ขอบเป็นสีแดงเพื่อให้เห็นชัดว่าต้องแก้ตรงไหน */
+.field.invalid input,
+.field.invalid select,
+.field.invalid textarea{
+  border-color:var(--danger);
+}
+.err{
+  min-height:1em;
+  font-size:.8rem;
+  color:var(--danger);
+  margin-top:4px;
+}
+
+.checkbox-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.checkbox-row label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:44px; /* พื้นที่กดอย่างน้อย 44px ตามมาตรฐาน iOS */
+  padding:0 14px;
+  font-size:.9rem;
+  font-weight:500;
+  color:var(--text-soft);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:999px;
+  cursor:pointer;
+}
+.checkbox-row input{ width:16px; height:16px; accent-color:var(--accent); }
+.checkbox-row input:checked + span,
+.checkbox-row label:has(input:checked){
+  color:var(--accent);
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+
+.formMsg{
+  font-size:.9rem;
+  padding:10px 12px;
+  border-radius:10px;
+  margin-bottom:14px;
+  display:none;
+}
+.formMsg.error{ display:block; color:var(--danger); background:var(--danger-soft); }
+.formMsg.success{ display:block; color:var(--success); background:var(--success-soft); }
+
+.submitBtn{
+  display:block;
+  width:100%;
+  min-height:48px;
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:600;
+  color:#fff;
+  background:var(--accent);
+  border:0;
+  border-radius:999px;
+  cursor:pointer;
+}
+.submitBtn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+/* แถบเมนูล่างสำหรับมือถือ (ชุดเดียวกับ index.html) */
+.nav-bar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:#ffffff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -2px 10px rgba(0,0,0,0.06);
+  border-top:1px solid var(--border);
+  z-index:100;
+}
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  text-decoration:none;
+  color:var(--text-soft);
+  font-size:0.7rem;
+  text-align:center;
+  flex:1;
+}
+.nav-icon{ display:flex; color:inherit; }
+.nav-item.active{ color:var(--accent); font-weight:700; }
+
+@media (min-width:600px){
+  .wrap{ padding:0 20px; }
+  .brand h1{ font-size:1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <h1>เสนอคำใหม่</h1>
+      <span>ช่วยเพิ่มคำภาษาถิ่นเข้าคลังคำศัพท์ ทีมงานจะตรวจสอบก่อนแสดงผล</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <form class="panel" id="wordForm" novalidate>
+
+    <p class="formMsg" id="formMsg" role="status" aria-live="polite"></p>
+
+    <div class="field">
+      <label for="central">คำภาษากลาง <span class="req">*</span></label>
+      <input type="text" id="central" placeholder="เช่น มอง">
+      <p class="err" id="err-central"></p>
+    </div>
+
+    <div class="field">
+      <label for="dialect">คำภาษาถิ่น <span class="req">*</span></label>
+      <input type="text" id="dialect" placeholder="เช่น เบิ่ง">
+      <p class="err" id="err-dialect"></p>
+    </div>
+
+    <div class="field">
+      <label>ภาคที่ใช้ <span class="req">*</span><span class="hint">เลือกได้มากกว่า 1 ภาค ถ้าคำนี้ใช้หลายภาค</span></label>
+      <div class="checkbox-row">
+        <label><input type="checkbox" name="region" value="กลาง"><span>กลาง</span></label>
+        <label><input type="checkbox" name="region" value="เหนือ"><span>เหนือ</span></label>
+        <label><input type="checkbox" name="region" value="อีสาน"><span>อีสาน</span></label>
+        <label><input type="checkbox" name="region" value="ใต้"><span>ใต้</span></label>
+      </div>
+      <p class="err" id="err-region"></p>
+    </div>
+
+    <div class="field">
+      <label for="province">จังหวัดที่ใช้ <span class="req">*</span><span class="hint">พิมพ์ได้หลายจังหวัด คั่นด้วยเครื่องหมายจุลภาค (,)</span></label>
+      <input type="text" id="province" placeholder="เช่น ขอนแก่น, อุดรธานี">
+      <p class="err" id="err-province"></p>
+    </div>
+
+    <div class="field">
+      <label for="reading">คำอ่าน <span class="req">*</span></label>
+      <input type="text" id="reading" placeholder="เช่น เบิ่ง">
+      <p class="err" id="err-reading"></p>
+    </div>
+
+    <div class="field">
+      <label for="pos">ชนิดของคำ <span class="req">*</span></label>
+      <input type="text" id="pos" placeholder="เช่น คำกริยา">
+      <p class="err" id="err-pos"></p>
+    </div>
+
+    <div class="field">
+      <label for="level">ระดับภาษา <span class="req">*</span></label>
+      <select id="level">
+        <option value="">-- เลือกระดับภาษา --</option>
+        <option value="ทางการ">ทางการ</option>
+        <option value="ทั่วไป">ทั่วไป</option>
+        <option value="กันเอง">กันเอง</option>
+        <option value="หยาบ">หยาบ</option>
+      </select>
+      <p class="err" id="err-level"></p>
+    </div>
+
+    <div class="field">
+      <label for="meaning">ความหมาย <span class="req">*</span></label>
+      <textarea id="meaning" rows="3" placeholder="อธิบายความหมายของคำนี้"></textarea>
+      <p class="err" id="err-meaning"></p>
+    </div>
+
+    <div class="field">
+      <label for="example">ตัวอย่างประโยคภาษาถิ่น <span class="hint">ไม่บังคับ</span></label>
+      <textarea id="example" rows="2" placeholder="เช่น เบิ่งหยังอยู่กะซั่น"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="example_th">แปลประโยคเป็นภาษากลาง <span class="hint">ไม่บังคับ</span></label>
+      <textarea id="example_th" rows="2" placeholder="เช่น มองอะไรอยู่งั้นหรอ"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="note">หมายเหตุเพิ่มเติม <span class="hint">ไม่บังคับ</span></label>
+      <textarea id="note" rows="2" placeholder="ข้อมูลทางภาษาศาสตร์เพิ่มเติม (ถ้ามี)"></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn" class="submitBtn">ส่งคำนี้เข้าระบบ</button>
+  </form>
+</main>
+
+<nav class="nav-bar">
+  <a href="index.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+      </svg>
+    </span>
+    <span class="nav-label">ค้นหาคำศัพท์</span>
+  </a>
+  <a href="all.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5C4.7 20 4 19.3 4 18.5z"/>
+        <path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/>
+      </svg>
+    </span>
+    <span class="nav-label">คำทั้งหมด</span>
+  </a>
+  <a href="submit.html" class="nav-item active">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l4 4"/>
+      </svg>
+    </span>
+    <span class="nav-label">เสนอคำใหม่</span>
+  </a>
+  <a href="about.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><path d="M12 7.8v.1"/>
+      </svg>
+    </span>
+    <span class="nav-label">เกี่ยวกับ</span>
+  </a>
+</nav>
+
+<!-- ใช้ supabase-js ชุดเดียวกับ index.html เพื่อส่งคำใหม่เข้าตาราง words -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ตั้งค่าการเชื่อมต่อ Supabase (ค่าเดียวกับที่ใช้ใน index.html)
+const SUPABASE_URL = "https://nkoacxbjbtcbiknewtoe.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_bB4lYjr7Lu-6LIBAnVVT8A_xr61kwAs";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $form = document.getElementById("wordForm");
+const $submitBtn = document.getElementById("submitBtn");
+const $formMsg = document.getElementById("formMsg");
+
+function val(id){ return document.getElementById(id).value.trim(); }
+
+const REGION_ORDER = ["กลาง", "เหนือ", "อีสาน", "ใต้"];
+
+// เรียงตามลำดับคงที่ก่อน join เพื่อไม่ให้ลำดับติ๊กเช็คบ็อกซ์ทำให้ UNIQUE(dialect, region) หลุด
+function getRegions(){
+  return [...document.querySelectorAll('input[name="region"]:checked')]
+    .map(c => c.value)
+    .sort((a, b) => REGION_ORDER.indexOf(a) - REGION_ORDER.indexOf(b));
+}
+
+// ล้าง error เก่าทั้งหมดก่อนตรวจใหม่ทุกครั้งที่กดส่ง
+function clearErrors(){
+  document.querySelectorAll(".err").forEach(el => el.textContent = "");
+  document.querySelectorAll(".field.invalid").forEach(el => el.classList.remove("invalid"));
+}
+
+// แสดงข้อความ error ใต้ช่องที่ผิด และไฮไลต์กรอบช่องนั้นเป็นสีแดง
+function setError(fieldId, message){
+  const err = document.getElementById("err-" + fieldId);
+  if (!err) return;
+  err.textContent = message;
+  const field = err.closest(".field");
+  if (field) field.classList.add("invalid");
+}
+
+// ตรวจทุกช่องที่ห้ามว่างตามโครงสร้างตาราง words
+// คืนค่า true/false และโฟกัสไปที่ช่องแรกที่กรอกผิด
+function validate(){
+  clearErrors();
+  let ok = true;
+  let firstInvalid = null;
+
+  function markInvalid(id, condition, message){
+    if (condition) return;
+    setError(id, message);
+    ok = false;
+    if (!firstInvalid){
+      firstInvalid = id === "region"
+        ? document.querySelector('input[name="region"]')
+        : document.getElementById(id);
+    }
+  }
+
+  markInvalid("central", val("central"), "กรุณากรอกคำภาษากลาง");
+  markInvalid("dialect", val("dialect"), "กรุณากรอกคำภาษาถิ่น");
+  markInvalid("region", getRegions().length > 0, "กรุณาเลือกอย่างน้อย 1 ภาค");
+  markInvalid("province", val("province"), "กรุณากรอกจังหวัดที่ใช้");
+  markInvalid("reading", val("reading"), "กรุณากรอกคำอ่าน");
+  markInvalid("pos", val("pos"), "กรุณากรอกชนิดของคำ");
+  markInvalid("level", val("level"), "กรุณาเลือกระดับภาษา");
+  markInvalid("meaning", val("meaning"), "กรุณากรอกความหมาย");
+
+  if (firstInvalid) firstInvalid.focus();
+  return ok;
+}
+
+// แปล error จาก Supabase ให้เป็นข้อความภาษาไทยที่คนทั่วไปอ่านเข้าใจ
+function mapError(error){
+  if (!error) return "เกิดข้อผิดพลาดไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง";
+  const msg = String(error.message || "");
+
+  // 23505 = unique constraint ซ้ำ ตรงกับ UNIQUE(dialect, region) ที่ตั้งไว้ในตาราง
+  if (error.code === "23505" || /duplicate key/i.test(msg)){
+    return "คำถิ่นนี้ในภาคที่เลือกมีอยู่ในระบบแล้ว ลองตรวจสอบในหน้า “คำทั้งหมด” ก่อนส่งซ้ำ";
+  }
+
+  // ข้อความจาก trigger ตรวจคำหยาบ (RAISE EXCEPTION) เป็นภาษาไทยอยู่แล้วจากฝั่งฐานข้อมูล
+  if (error.code === "P0001" || /ระดับภาษา/.test(msg)){
+    return msg;
+  }
+
+  // เชื่อมต่ออินเทอร์เน็ต/Supabase ไม่ได้
+  if (/Failed to fetch|NetworkError|network/i.test(msg)){
+    return "เชื่อมต่ออินเทอร์เน็ตไม่ได้ กรุณาตรวจสอบสัญญาณแล้วลองใหม่อีกครั้ง";
+  }
+
+  return "ส่งข้อมูลไม่สำเร็จ: " + msg;
+}
+
+$form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  $formMsg.className = "formMsg";
+  $formMsg.textContent = "";
+
+  if (!validate()) return;
+
+  const payload = {
+    central: val("central"),
+    dialect: val("dialect"),
+    region: getRegions().join(","),
+    province: val("province"),
+    reading: val("reading"),
+    pos: val("pos"),
+    level: val("level"),
+    meaning: val("meaning"),
+    example: val("example") || null,
+    example_th: val("example_th") || null,
+    note: val("note") || null
+  };
+
+  // ปิดปุ่มส่งระหว่างรอผลลัพธ์ กันการกดส่งซ้ำซ้อน
+  $submitBtn.disabled = true;
+  $submitBtn.textContent = "กำลังส่ง…";
+
+  sb.from("words").insert(payload).then(function(res){
+    $submitBtn.disabled = false;
+    $submitBtn.textContent = "ส่งคำนี้เข้าระบบ";
+
+    if (res.error){
+      $formMsg.className = "formMsg error";
+      $formMsg.textContent = mapError(res.error);
+      return;
+    }
+
+    $form.reset();
+    clearErrors();
+    $formMsg.className = "formMsg success";
+    $formMsg.textContent = "ส่งคำสำเร็จ คำของคุณเข้าระบบและแสดงบนหน้าค้นหาแล้ว ขอบคุณที่ช่วยเพิ่มคำถิ่น";
+  }).catch(function(error){
+    $submitBtn.disabled = false;
+    $submitBtn.textContent = "ส่งคำนี้เข้าระบบ";
+    $formMsg.className = "formMsg error";
+    $formMsg.textContent = mapError(error);
+  });
+});
+</script>
+</body>
+</html>

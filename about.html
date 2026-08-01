@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>เกี่ยวกับโครงงาน | พจนานุกรมภาษาถิ่นไทย</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ชุดสี/ตัวแปรพื้นฐาน คัดลอกมาจาก index.html เพื่อให้หน้าตาตรงกันทุกหน้า */
+:root{
+  --bg:#faf8f5;
+  --surface:#ffffff;
+  --border:#e8e2d9;
+  --text:#2b2622;
+  --text-soft:#6f665e;
+  --accent:#b3541e;
+  --accent-soft:#fdf2e9;
+  --highlight:#ffe9a8;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.04);
+  --nav-h:60px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  font-family:"Noto Sans Thai", system-ui, -apple-system, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  font-size:16px;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+}
+
+.wrap{
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+  padding:0 12px;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--bg);
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.brand h1{
+  font-size:1.2rem;
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-.01em;
+}
+.brand span{
+  display:block;
+  font-size:.75rem;
+  color:var(--text-soft);
+  margin-top:2px;
+}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+  margin:14px 0;
+}
+.panel h2{
+  font-size:1rem;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.panel p{
+  font-size:.92rem;
+  margin-bottom:8px;
+}
+.panel p:last-child{ margin-bottom:0; }
+.panel ul{
+  padding-left:1.2em;
+  font-size:.92rem;
+}
+.panel li{ margin-bottom:4px; }
+.panel li:last-child{ margin-bottom:0; }
+
+/* กล่องตัวเลขจำนวนคำ ดึงจริงจาก Google Sheets ไม่ใส่ตายตัว */
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:10px;
+  margin-top:10px;
+}
+.stat{
+  background:var(--accent-soft);
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+.stat .num{
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--accent);
+  line-height:1.2;
+}
+.stat .lb{
+  font-size:.75rem;
+  color:var(--text-soft);
+  margin-top:2px;
+}
+
+.state{
+  text-align:center;
+  padding:24px 16px;
+  color:var(--text-soft);
+  font-size:.9rem;
+}
+.spinner{
+  width:22px; height:22px;
+  margin:0 auto 10px;
+  border:2.5px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.schema-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.82rem;
+  margin-top:8px;
+}
+.schema-table th, .schema-table td{
+  text-align:left;
+  padding:6px 8px;
+  border-bottom:1px solid var(--border);
+  overflow-wrap:anywhere;
+}
+.schema-table th{ color:var(--text-soft); font-weight:600; }
+
+/* แถบเมนูล่างสำหรับมือถือ (ชุดเดียวกับ index.html) */
+.nav-bar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:#ffffff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -2px 10px rgba(0,0,0,0.06);
+  border-top:1px solid var(--border);
+  z-index:100;
+}
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  text-decoration:none;
+  color:var(--text-soft);
+  font-size:0.7rem;
+  text-align:center;
+  flex:1;
+}
+.nav-icon{ display:flex; color:inherit; }
+.nav-item.active{ color:var(--accent); font-weight:700; }
+
+@media (min-width:600px){
+  .wrap{ padding:0 20px; }
+  .brand h1{ font-size:1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <h1>เกี่ยวกับโครงงาน</h1>
+      <span>ที่มา วิธีเก็บข้อมูล และสถิติคลังคำ</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel">
+    <h2>ที่มาและวัตถุประสงค์</h2>
+    <p>
+      พจนานุกรมภาษาถิ่นไทยนี้เป็นโครงงานคอมพิวเตอร์ระดับมัธยมศึกษาตอนปลาย
+      จัดทำขึ้นเพื่อแก้ปัญหาความยากในการค้นหาและเปรียบเทียบคำภาษาถิ่นของไทย
+      ทั้ง 4 ภาค (กลาง เหนือ อีสาน ใต้) โดยรวบรวมคำภาษากลางและคำภาษาถิ่น
+      ไว้ในฐานข้อมูลกลางเดียวกัน พร้อมระบบค้นหาและกรองตามภาค
+      เพื่อให้ครูและนักเรียนใช้ค้นคว้าและศึกษาความหลากหลายทางภาษาได้สะดวก
+      โดยเฉพาะการใช้งานผ่านโทรศัพท์มือถือ
+    </p>
+    <!-- TODO: ผู้จัดทำสามารถเพิ่มชื่อโรงเรียน / รายชื่อสมาชิกกลุ่ม / อาจารย์ที่ปรึกษาได้ตรงนี้ -->
+    <p>
+      จัดทำโดย: <em>(ใส่ชื่อโรงเรียนและรายชื่อสมาชิกกลุ่มของคุณที่นี่)</em>
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>วิธีเก็บข้อมูล</h2>
+    <p>
+      ข้อมูลคำศัพท์ทั้งหมดถูกจัดเก็บในรูปแบบตาราง (Google Sheets) แล้วเผยแพร่
+      เป็นไฟล์ CSV ให้เว็บไซต์ดึงไปแสดงผลแบบเรียลไทม์ผ่านไลบรารี PapaParse
+      โดยแต่ละคำมีข้อมูลครบทั้งคำภาษากลาง คำภาษาถิ่น ภาคและจังหวัดที่ใช้
+      คำอ่าน ชนิดของคำ ระดับภาษา ความหมาย ตัวอย่างประโยค และหมายเหตุทางภาษาศาสตร์
+    </p>
+    <p>
+      คำที่ถูกเสนอเข้ามาใหม่ (ผ่านหน้า “เสนอคำใหม่”) จะถูกทำเครื่องหมายสถานะ
+      “รอตรวจ” ก่อนเสมอ จากนั้นทีมงานจะตรวจสอบความถูกต้องร่วมกับเจ้าของภาษา
+      ในแต่ละภูมิภาค เมื่อยืนยันแล้วจึงเปลี่ยนสถานะเป็น “ยืนยัน” และแสดงผล
+      ในหน้าค้นหาและหน้าคำทั้งหมด
+    </p>
+    <table class="schema-table">
+      <thead><tr><th>คอลัมน์</th><th>ความหมาย</th></tr></thead>
+      <tbody>
+        <tr><td>central</td><td>คำภาษากลาง</td></tr>
+        <tr><td>dialect</td><td>คำภาษาถิ่น</td></tr>
+        <tr><td>region / province</td><td>ภาคและจังหวัดที่ใช้</td></tr>
+        <tr><td>reading</td><td>คำอ่านออกเสียง</td></tr>
+        <tr><td>meaning / example</td><td>ความหมายและตัวอย่างประโยค</td></tr>
+        <tr><td>status</td><td>สถานะตรวจสอบ (ยืนยัน / รอตรวจ)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>จำนวนคำในระบบ</h2>
+    <div id="statBox">
+      <div class="state"><div class="spinner"></div>กำลังนับจำนวนคำจากฐานข้อมูล…</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>แหล่งอ้างอิงและเครื่องมือที่ใช้</h2>
+    <ul>
+      <li>Google Sheets — จัดเก็บและแก้ไขฐานข้อมูลคำศัพท์</li>
+      <li>PapaParse (papaparse.min.js) — แปลงไฟล์ CSV เป็นข้อมูล JavaScript</li>
+      <li>GitHub Pages — โฮสต์เว็บไซต์แบบไม่มีค่าใช้จ่าย</li>
+      <li>Google Fonts (Noto Sans Thai) — ฟอนต์แสดงผลภาษาไทย</li>
+    </ul>
+    <!-- TODO: เพิ่มแหล่งอ้างอิงทางวิชาการ เช่น หนังสือ งานวิจัย หรือผู้ให้ข้อมูลภาษาถิ่นที่ใช้จริงตรงนี้ -->
+    <p style="margin-top:8px">
+      <em>(เพิ่มแหล่งอ้างอิงทางวิชาการหรือผู้ให้ข้อมูลภาษาถิ่นที่ใช้จริงตรงนี้)</em>
+    </p>
+  </section>
+
+</main>
+
+<nav class="nav-bar">
+  <a href="index.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+      </svg>
+    </span>
+    <span class="nav-label">ค้นหาคำศัพท์</span>
+  </a>
+  <a href="all.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5C4.7 20 4 19.3 4 18.5z"/>
+        <path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/>
+      </svg>
+    </span>
+    <span class="nav-label">คำทั้งหมด</span>
+  </a>
+  <a href="submit.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l4 4"/>
+      </svg>
+    </span>
+    <span class="nav-label">เสนอคำใหม่</span>
+  </a>
+  <a href="about.html" class="nav-item active">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><path d="M12 7.8v.1"/>
+      </svg>
+    </span>
+    <span class="nav-label">เกี่ยวกับ</span>
+  </a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vStyCZZbgZfElifBc3P0rrc3Iy_hRYwHMy3_Svhoe7ANe5dfCVcD5Yrarrkv43OAMUQfT0aPeHP4-XK/pub?gid=0&single=true&output=csv";
+const HIDE_STATUS = [];
+
+const $statBox = document.getElementById("statBox");
+
+function norm(s){ return String(s ?? "").trim().toLowerCase(); }
+function esc(s){
+  return String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// เหมือนกับใน index.html: แยกค่าที่คั่นด้วย , ให้เป็นรายการ (ใช้กับ region ที่มีได้หลายภาค)
+function splitList(str){
+  return String(str ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+function loadStats(){
+  Papa.parse(CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: h => String(h).trim().toLowerCase(),
+    complete: function(res){
+      const rows = res.data
+        .filter(r => norm(r.central) || norm(r.dialect))
+        .filter(r => !HIDE_STATUS.includes(norm(r.status)));
+
+      if (rows.length === 0){
+        $statBox.innerHTML = '<div class="state"><strong>ยังไม่พบข้อมูล</strong>ลองตรวจสอบว่า Google Sheets ยัง Publish อยู่หรือไม่</div>';
+        return;
+      }
+
+      const regionCount = {};
+      rows.forEach(r => {
+        splitList(r.region).forEach(reg => {
+          regionCount[reg] = (regionCount[reg] || 0) + 1;
+        });
+      });
+
+      const regionStats = Object.keys(regionCount)
+        .sort((a, b) => a.localeCompare(b, "th"))
+        .map(reg => '<div class="stat"><div class="num">' + regionCount[reg] + '</div><div class="lb">' + esc(reg) + '</div></div>')
+        .join("");
+
+      $statBox.innerHTML =
+        '<div class="stat-grid">' +
+          '<div class="stat"><div class="num">' + rows.length + '</div><div class="lb">คำทั้งหมด</div></div>' +
+          regionStats +
+        '</div>';
+    },
+    error: function(){
+      $statBox.innerHTML = '<div class="state"><strong>โหลดข้อมูลไม่สำเร็จ</strong>ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</div>';
+    }
+  });
+}
+
+loadStats();
+</script>
+</body>
+</html>
