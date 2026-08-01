@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>พจนานุกรมภาษาถิ่นไทย 4 ภาค</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#faf8f5;
+  --surface:#ffffff;
+  --border:#e8e2d9;
+  --text:#2b2622;
+  --text-soft:#6f665e;
+  --accent:#b3541e;
+  --accent-soft:#fdf2e9;
+  --highlight:#ffe9a8;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.04);
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  font-family:"Noto Sans Thai", system-ui, -apple-system, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.65;
+  font-size:16px;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+.wrap{
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+  padding:0 12px;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--bg);
+  padding-top:14px;
+  border-bottom:1px solid var(--border);
+}
+
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.brand h1{
+  font-size:1.2rem;
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-.01em;
+}
+.brand span{
+  font-size:.75rem;
+  color:var(--text-soft);
+}
+
+.search-box{ position:relative; }
+.search-box input{
+  width:100%;
+  padding:13px 42px 13px 40px;
+  font-family:inherit;
+  font-size:1rem;
+  color:var(--text);
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:999px;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-box input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+.search-box .icon{
+  position:absolute;
+  left:14px; top:50%;
+  transform:translateY(-50%);
+  color:var(--text-soft);
+  pointer-events:none;
+  display:flex;
+}
+.search-box .clear{
+  position:absolute;
+  right:6px; top:50%;
+  transform:translateY(-50%);
+  width:32px; height:32px;
+  display:none;
+  align-items:center; justify-content:center;
+  border:0; border-radius:50%;
+  background:transparent;
+  color:var(--text-soft);
+  font-size:1.1rem;
+  cursor:pointer;
+}
+
+.filters{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding:10px 0;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.filters::-webkit-scrollbar{ display:none; }
+
+.chip{
+  flex:0 0 auto;
+  padding:6px 14px;
+  font-family:inherit;
+  font-size:.85rem;
+  font-weight:500;
+  color:var(--text-soft);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:999px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.15s;
+}
+.chip[aria-pressed="true"]{
+  color:#fff;
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+.meta{
+  font-size:.8rem;
+  color:var(--text-soft);
+  padding:12px 2px 8px;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  margin-bottom:10px;
+  overflow:hidden;
+}
+
+.card-head{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:14px;
+  font-family:inherit;
+  background:none;
+  border:0;
+  cursor:pointer;
+}
+
+.word{
+  font-size:1.25rem;
+  font-weight:700;
+  color:var(--accent);
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.reading{
+  font-size:.82rem;
+  color:var(--text-soft);
+  margin-top:1px;
+}
+.central{
+  font-size:.95rem;
+  margin-top:6px;
+}
+.central b{ font-weight:600; }
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:9px;
+}
+.tag{
+  font-size:.7rem;
+  font-weight:500;
+  padding:2px 8px;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  white-space:nowrap;
+}
+.tag.grey{ background:#f1efec; color:var(--text-soft); }
+
+.card-body{
+  display:none;
+  padding:0 14px 14px;
+  border-top:1px dashed var(--border);
+  margin-top:2px;
+  padding-top:12px;
+}
+.card.open .card-body{ display:block; }
+
+.row{ margin-bottom:10px; }
+.row:last-child{ margin-bottom:0; }
+.row .label{
+  font-size:.7rem;
+  font-weight:600;
+  color:var(--text-soft);
+  display:block;
+  margin-bottom:2px;
+}
+.row .value{ font-size:.92rem; overflow-wrap:anywhere; }
+.example{
+  background:var(--bg);
+  border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  padding:9px 11px;
+}
+.example .th{
+  font-size:.85rem;
+  color:var(--text-soft);
+  margin-top:4px;
+}
+
+.state{
+  text-align:center;
+  padding:48px 16px;
+  color:var(--text-soft);
+  font-size:.9rem;
+}
+.spinner{
+  width:26px; height:26px;
+  margin:0 auto 14px;
+  border:2.5px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+mark{ background:var(--highlight); color:inherit; border-radius:3px; padding:0 1px; }
+
+.more{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin:6px 0 20px;
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:500;
+  color:var(--accent);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  cursor:pointer;
+}
+
+/* แถบเมนูล่างสำหรับมือถือ */
+.nav-bar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:#ffffff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -2px 10px rgba(0,0,0,0.06);
+  border-top:1px solid var(--border);
+  z-index:100;
+}
+/* ข้อ 1: เปลี่ยนจากอิโมจิเป็น inline SVG ไอคอนเส้นเดียวกันทั้งชุด
+   จัดเป็นคอลัมน์ (ไอคอนบน + ข้อความล่าง) และใช้ currentColor
+   เพื่อให้สีไอคอนเปลี่ยนตามสถานะ active โดยอัตโนมัติ */
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  text-decoration:none;
+  color:var(--text-soft);
+  font-size:0.7rem;
+  text-align:center;
+  flex:1;
+}
+.nav-icon{
+  display:flex;
+  color:inherit; /* ให้ไอคอนรับสีต่อจาก .nav-item / .nav-item.active */
+}
+.nav-item.active{
+  color:var(--accent);
+  font-weight:700;
+}
+
+@media (min-width:600px){
+  .wrap{ padding:0 20px; }
+  .brand h1{ font-size:1.4rem; }
+  .word{ font-size:1.4rem; }
+  .card-head{ padding:18px; }
+  .card-body{ padding:14px 18px 18px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <h1>📖 พจนานุกรมภาษาถิ่นไทย</h1>
+      <span>ค้นคำกลาง · คำถิ่น 4 ภาค</span>
+    </div>
+
+    <div class="search-box">
+      <span class="icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+        </svg>
+      </span>
+      <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="พิมพ์คำถิ่น หรือ คำกลางที่ต้องการค้นหา..." aria-label="ค้นหาคำศัพท์">
+      <button class="clear" id="clearBtn" type="button" aria-label="ล้างคำค้น">✕</button>
+    </div>
+
+    <div class="filters" id="filters"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="meta" id="meta" role="status" aria-live="polite"></p>
+  <div id="results"></div>
+</main>
+
+<!-- ข้อ 1: ไอคอน SVG เส้นเดียวกันทั้งชุด (ขนาด 22x22, stroke-width 1.8, currentColor) แทนอิโมจิเดิม -->
+<nav class="nav-bar">
+  <a href="index.html" class="nav-item active">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+      </svg>
+    </span>
+    <span class="nav-label">ค้นหาคำศัพท์</span>
+  </a>
+  <a href="all.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5C4.7 20 4 19.3 4 18.5z"/>
+        <path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/>
+      </svg>
+    </span>
+    <span class="nav-label">คำทั้งหมด</span>
+  </a>
+  <a href="submit.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l4 4"/>
+      </svg>
+    </span>
+    <span class="nav-label">เสนอคำใหม่</span>
+  </a>
+  <a href="about.html" class="nav-item">
+    <span class="nav-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><path d="M12 7.8v.1"/>
+      </svg>
+    </span>
+    <span class="nav-label">เกี่ยวกับ</span>
+  </a>
+</nav>
+
+<!-- ข้อ 4: ใช้ supabase-js ผ่าน CDN แทน PapaParse เดิม (ไม่มี build step, เรียกใช้ตรงจากเบราว์เซอร์ได้เลย) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ตั้งค่าการเชื่อมต่อ Supabase
+// หาค่า 2 ตัวนี้ได้ที่ Supabase Dashboard > Project Settings > API
+//   Project URL      -> ใส่ใน SUPABASE_URL
+//   anon public key  -> ใส่ใน SUPABASE_ANON_KEY
+const SUPABASE_URL = "https://nkoacxbjbtcbiknewtoe.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_bB4lYjr7Lu-6LIBAnVVT8A_xr61kwAs";
+
+// ตั้งชื่อตัวแปรว่า sb (ไม่ใช่ supabase) เพื่อไม่ให้ทับกับ window.supabase
+// ที่ script ด้านบนสร้างไว้ให้เป็น namespace กลางของไลบรารี
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PAGE_SIZE = 20;
+
+let allRows = [];
+let shownRows = [];
+let limit = PAGE_SIZE;
+let region = "";
+let keyword = "";
+
+const $q = document.getElementById("q");
+const $clear = document.getElementById("clearBtn");
+const $filters = document.getElementById("filters");
+const $meta = document.getElementById("meta");
+const $results = document.getElementById("results");
+
+function norm(s){ return String(s ?? "").trim().toLowerCase(); }
+function esc(s){
+  return String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function hi(text){
+  const safe = esc(text);
+  if (!keyword) return safe;
+  const re = new RegExp("(" + escRe(keyword) + ")", "gi");
+  return safe.replace(re, "<mark>$1</mark>");
+}
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+}
+
+function splitList(str) {
+  return String(str ?? "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+function loadData(){
+  $results.innerHTML = '<div class="state"><div class="spinner"></div>กำลังโหลดคลังคำศัพท์…</div>';
+  $meta.textContent = "";
+
+  // ดึงทุกแถวจากตาราง words ใน Supabase (select("*") = เอาทุกคอลัมน์)
+  sb.from("words").select("*").then(function(res){
+    if (res.error){
+      showError("โหลดข้อมูลไม่สำเร็จ", "ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือการตั้งค่า Supabase URL/anon key");
+      return;
+    }
+
+    allRows = res.data
+      .filter(r => norm(r.central) || norm(r.dialect));
+
+    if (allRows.length === 0){
+      showError("ไม่พบข้อมูลในฐานข้อมูล", "ลองตรวจสอบว่ามีข้อมูลอยู่ในตาราง words หรือไม่");
+      return;
+    }
+
+    buildFilters();
+    applySearch();
+  }).catch(function(){
+    showError("โหลดข้อมูลไม่สำเร็จ", "ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือการตั้งค่า Supabase URL/anon key");
+  });
+}
+
+function showError(title, detail){
+  $results.innerHTML = '<div class="state"><strong>' + esc(title) + '</strong>' + esc(detail) +
+    '<br><button class="more" type="button" id="retryBtn" style="margin-top:14px;">ลองใหม่อีกครั้ง</button></div>';
+  document.getElementById("retryBtn").addEventListener("click", loadData);
+}
+
+function buildFilters(){
+  const regionSet = new Set();
+  allRows.forEach(r => {
+    splitList(r.region).forEach(reg => regionSet.add(reg));
+  });
+
+  const regions = [...regionSet].sort((a, b) => a.localeCompare(b, "th"));
+  const items = [{ v: "", t: "ทุกภาค" }].concat(regions.map(r => ({ v: r, t: r })));
+
+  $filters.innerHTML = items.map(it =>
+    '<button class="chip" type="button" data-region="' + esc(it.v) + '" ' +
+    'aria-pressed="' + (it.v === region) + '">' + esc(it.t) + '</button>'
+  ).join("");
+}
+
+$filters.addEventListener("click", function(e){
+  const btn = e.target.closest(".chip");
+  if (!btn) return;
+
+  region = btn.dataset.region;
+  $filters.querySelectorAll(".chip").forEach(c =>
+    c.setAttribute("aria-pressed", c.dataset.region === region)
+  );
+  applySearch();
+});
+
+function applySearch(){
+  keyword = $q.value.trim();
+  const k = norm(keyword);
+  limit = PAGE_SIZE;
+
+  shownRows = allRows.filter(r => {
+    if (region) {
+      const regList = splitList(r.region);
+      if (!regList.includes(region)) return false;
+    }
+    if (!k) return true;
+    const haystack = [r.central, r.dialect, r.reading, r.meaning, r.province, r.example, r.example_th]
+                      .map(norm).join(" ");
+    return haystack.includes(k);
+  });
+
+  if (k){
+    shownRows.sort((a, b) => score(b, k) - score(a, k));
+  }
+
+  render();
+}
+
+function score(r, k){
+  const fields = [norm(r.dialect), norm(r.central)];
+  let best = 0;
+  for (const f of fields){
+    if (f === k) best = Math.max(best, 3);
+    else if (f.startsWith(k)) best = Math.max(best, 2);
+    else if (f.includes(k)) best = Math.max(best, 1);
+  }
+  return best;
+}
+
+function render(){
+  if (shownRows.length === 0){
+    $meta.textContent = "";
+    $results.innerHTML = '<div class="state"><strong>ไม่พบคำที่ค้นหา</strong>ลองพิมพ์คำสั้นลง หรือเปลี่ยนตัวกรองภาคดูนะ</div>';
+    return;
+  }
+
+  const slice = shownRows.slice(0, limit);
+  $meta.textContent = "พบ " + shownRows.length + " คำ" + (region ? " · ภาค" + region : "");
+
+  let html = slice.map(cardHTML).join("");
+
+  if (shownRows.length > limit){
+    html += '<button class="more" type="button" id="moreBtn">แสดงเพิ่มอีก ' +
+            Math.min(PAGE_SIZE, shownRows.length - limit) + ' คำ</button>';
+  }
+
+  $results.innerHTML = html;
+
+  const $more = document.getElementById("moreBtn");
+  if ($more) $more.addEventListener("click", () => { limit += PAGE_SIZE; render(); });
+}
+
+function cardHTML(r){
+  const dialect = String(r.dialect ?? "").trim();
+  const central = String(r.central ?? "").trim();
+
+  let tags = "";
+  splitList(r.region).forEach(reg => {
+    tags += '<span class="tag">' + esc(reg) + '</span>';
+  });
+  splitList(r.province).forEach(prov => {
+    tags += '<span class="tag grey">' + esc(prov) + '</span>';
+  });
+  if (String(r.pos ?? "").trim())      tags += '<span class="tag grey">' + esc(r.pos) + '</span>';
+
+  let body = "";
+
+  if (String(r.meaning ?? "").trim()){
+    body += '<div class="row"><span class="label">ความหมาย</span>' +
+            '<div class="value">' + hi(r.meaning) + '</div></div>';
+  }
+
+  if (String(r.example ?? "").trim()){
+    body += '<div class="row"><span class="label">ตัวอย่างประโยค</span>' +
+            '<div class="value example">' + hi(r.example) +
+            (String(r.example_th ?? "").trim() ? '<div class="th">→ ' + hi(r.example_th) + '</div>' : '') +
+            '</div></div>';
+  }
+
+  if (String(r.note ?? "").trim()){
+    body += '<div class="row"><span class="label">หมายเหตุ</span>' +
+            '<div class="value">' + esc(r.note) + '</div></div>';
+  }
+
+  if (!body) body = '<div class="row"><div class="value">— ยังไม่มีรายละเอียดเพิ่มเติม —</div></div>';
+
+  return '' +
+  '<article class="card">' +
+    '<button class="card-head" type="button" aria-expanded="false">' +
+      '<div class="word">' + hi(dialect || central) + '</div>' +
+      (String(r.reading ?? "").trim() ? '<div class="reading">อ่านว่า ' + hi(r.reading) + '</div>' : '') +
+      (dialect && central ? '<div class="central">ตรงกับคำกลาง <b>' + hi(central) + '</b></div>' : '') +
+      (tags ? '<div class="tags">' + tags + '</div>' : '') +
+    '</button>' +
+    '<div class="card-body">' + body + '</div>' +
+  '</article>';
+}
+
+$results.addEventListener("click", function(e){
+  const head = e.target.closest(".card-head");
+  if (!head) return;
+  const card = head.parentElement;
+  const open = card.classList.toggle("open");
+  head.setAttribute("aria-expanded", open);
+});
+
+const onType = debounce(() => {
+  $clear.style.display = $q.value ? "flex" : "none";
+  applySearch();
+}, 200);
+
+$q.addEventListener("input", onType);
+$clear.addEventListener("click", () => {
+  $q.value = "";
+  $clear.style.display = "none";
+  $q.focus();
+  applySearch();
+});
+$q.addEventListener("keydown", e => { if (e.key === "Enter") $q.blur(); });
+
+loadData();
+</script>
+</body>
+</html>
