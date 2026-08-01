@@ -1,0 +1,14 @@
+# ไฟล์ระบบปฏิบัติการ
+.DS_Store
+Thumbs.db
+
+# ไฟล์ชั่วคราวของ editor
+*.swp
+.vscode/
+
+# กันพลาด: ห้าม commit service_role key (secret key ของ Supabase) เด็ดขาด
+# ต่างจาก anon/publishable key ที่ตั้งใจฝังในโค้ดหน้าเว็บได้ (ดูเหตุผลใน docs/ARCHITECTURE.md)
+# key คู่นี้ไม่ควรมีอยู่ใน repo เลย แต่กันไว้เผื่อมีใครสร้างไฟล์เก็บไว้ในเครื่องแล้วลืมลบ
+*service_role*
+.env
+.env.*
